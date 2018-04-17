@@ -17,7 +17,7 @@ main =
                 [ h1 [] [ text "Web App" ]
                 , div []
                     [ span [ class "tagline" ] [ text "This will be Experiment with Elm " ]
-                    , span [ class "yellow" ] [ text " part 2" ]
+                    , span [ class "yellow" ] [ text " part 1" ]
                     ]
                 ]
     in

@@ -2,15 +2,17 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import InitialModel exposing (..)
 
 
-model =
-    { result = { name = "Amazon EC2", link = "http://aws.amazon.com/documentation/ec2/?icmpid=docs_menu_internal" }
-    }
 
+viewResults result =
+    li []
+                [ span [] [ text result.name ]
+                , a [ href result.link, class "link" ] [ text "Click for Details" ]
+                ]
 
-main : Html msg
-main =
+view model =
     let
         headerInfo =
             header []
@@ -23,10 +25,20 @@ main =
     in
     div [ class "content" ]
         [ headerInfo
-        , ul [ class "results" ]
-            [ li []
-                [ span [] [ text model.result.name ]
-                , a [ href model.result.link, class "link" ] [ text "Click for Details" ]
-                ]
-            ]
+        , ul [ class "results" ] (List.map viewResults model.result)
+            
         ]
+
+
+update msg model =
+    -- TODO if msg.operation == "DELETE_BY_ID",
+    -- then return a new model without the given ID present anymore.
+    model
+
+
+main =
+    Html.beginnerProgram
+        { view = view
+        , update = update
+        , model = initialModel
+        }
