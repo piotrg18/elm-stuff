@@ -1,6 +1,6 @@
 module InitialModel exposing (initialModel)
 
-initialModel : { query : String, result : List { link : String, name : String } }
+
 initialModel =
     { query = "EC 2"
     , result =

@@ -3,14 +3,16 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import InitialModel exposing (..)
-
+import Html.Events exposing (onClick)
 
 
 viewResults result =
     li []
-                [ span [] [ text result.name ]
-                , a [ href result.link, class "link" ] [ text "Click for Details" ]
-                ]
+        [ span [] [ text result.name ]
+        , a [ href result.link, class "link" ] [ text "Click for Details" ]
+        ,button [class "hide-result" , onClick {operation = "DELETE_BY_ID" ,data = result.name }] [text "x"]
+        ]
+
 
 view model =
     let
@@ -26,14 +28,16 @@ view model =
     div [ class "content" ]
         [ headerInfo
         , ul [ class "results" ] (List.map viewResults model.result)
-            
         ]
 
 
 update msg model =
+    if msg.operation == "DELETE_BY_ID" then
+        {model | result =  model.result |> List.filter (\result -> result.name /= msg.data)  }
+    else
     -- TODO if msg.operation == "DELETE_BY_ID",
     -- then return a new model without the given ID present anymore.
-    model
+        model
 
 
 main =
