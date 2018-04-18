@@ -17,10 +17,9 @@ type alias SearchResult =
     }
 
 
-type alias Msg =
-    { operation : String
-    , name : String
-    }
+type  Msg =
+     DeleteById String
+
 
 
 viewResults : SearchResult -> Html Msg
@@ -28,7 +27,7 @@ viewResults result =
     li []
         [ span [] [ text result.name ]
         , a [ href result.link, class "link" ] [ text "Click for Details" ]
-        , button [ class "hide-result", onClick { operation = "DELETE_BY_ID", name = result.name } ] [ text "x" ]
+        , button [ class "hide-result", onClick ( DeleteById result.name ) ] [ text "x" ]
         ]
 
 
@@ -52,12 +51,11 @@ view model =
 
 update : Msg -> Model -> Model
 update msg model =
-    if msg.operation == "DELETE_BY_ID" then
-        { model | result = model.result |> List.filter (\result -> result.name /= msg.name) }
-    else
-        model
-
-
+    case msg of 
+        DeleteById name ->
+            { model | result = model.result |> List.filter (\result -> result.name /= name) }
+        
+        
 main : Program Never Model Msg
 main =
     Html.beginnerProgram
