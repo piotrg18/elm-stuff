@@ -88,7 +88,7 @@ update : Msg -> Model -> (Model,Cmd Msg)
 update msg model =
     case msg of
         Search ->
-            (model,searchAmazon model.query)
+            ({model| errorMessage = Nothing },searchAmazon model.query)
         SetQuery query ->
             ({ model | query = query },Cmd.none)
         DeleteById name ->
