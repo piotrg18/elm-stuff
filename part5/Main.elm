@@ -94,10 +94,10 @@ update msg model =
         DeleteById name ->
             ({ model | results = model.results |> List.filter (\result -> result.name /= name) },Cmd.none)
         HandleSearch (Ok result) ->
-            ({model | results = flatJsonResponse result model.query },Cmd.none)
+            ({model | results = flatJsonResponse result model.query , errorMessage = Nothing },Cmd.none)
                 
         HandleSearch (Err error) ->
-                ({model | errorMessage = Just (toString error)},Cmd.none)
+                ({model | errorMessage = Just (toString error),results = []},Cmd.none)
         
         
 searchResultDecoder : Decoder SearchResult
