@@ -1,3 +1,9 @@
+module Response exposing (json)
+
+
+json : String
+json =
+    """
 {
     "flyoutList": [
         {
@@ -763,3 +769,4 @@
         }
     ]
 }
+"""
