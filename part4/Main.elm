@@ -39,7 +39,7 @@ view model =
                 [ h1 [] [ text "Web App" ]
                 , div []
                     [ span [ class "tagline" ] [ text "This will be Experiment with Elm " ]
-                    , span [ class "yellow" ] [ text " part 3" ]
+                    , span [ class "yellow" ] [ text " part 4" ]
                     ]
                 ]
     in
