@@ -24,7 +24,7 @@ type Msg
 
 tick : Sub Msg
 tick =
-    Time.every (200 * Time.millisecond) Tick
+    Time.every (100 * Time.millisecond) Tick
 
 
 type alias Block =
