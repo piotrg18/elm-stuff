@@ -244,18 +244,18 @@ makeFruitSpawnGenerator =
     in
         Random.map2 (\pos chance -> { position = pos, chance = chance }) spawnPosition spawnChance
 
-renderBlock : Block -> Svg Msg
-renderBlock block =
+renderBlock : Block -> String -> Svg Msg
+renderBlock block color=
     let
         ( strX, strY ) =
             ( toString block.x, toString block.y )
     in
-        rect [ x strX, y strY, width "1", height "1", fill "red", rx "0.5" ] []
+        rect [ x strX, y strY, width "1", height "1", fill color, rx "0.5" ] []
 
 
 renderSnake : Snake -> List (Svg Msg)
 renderSnake snake =
-    List.map renderBlock snake
+    List.map (\b -> renderBlock b "red") snake 
 
 render : Game -> Html.Html Msg
 render game =
@@ -276,7 +276,7 @@ renderFruit fruit =
             []
 
         Just fruit ->
-            [ renderBlock fruit ]
+            [ renderBlock fruit "yellow" ]
 
 
 
