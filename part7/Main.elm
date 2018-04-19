@@ -3,16 +3,22 @@ module Main exposing (..)
 import Html
 import Html.Attributes exposing (style)
 import Keyboard
-
+import Random
 import Svg exposing (..)
 import Svg.Attributes exposing (fill, height, id, in_, result, rx, stdDeviation, viewBox, width, x, y)
 
 import Time exposing (Time)
 
 
+type alias FruitSpawn =
+    { position : ( Int, Int )
+    , chance : Int
+    }
+
 type Msg
     = Tick Time
     | ArrowPressed ArrowKey
+    | MaybeSpawnFruit FruitSpawn
 
 
 tick : Sub Msg
@@ -47,6 +53,8 @@ type alias Game =
     , paused : Bool
     ,snake : Snake
     ,isDead:Bool
+    , fruit : Maybe Block
+    , ateFruit : Bool
     }
 
 
@@ -64,6 +72,8 @@ init =
     , paused = False
      ,snake = initSnake
      ,isDead = False
+      , fruit = Nothing
+    , ateFruit = False
     }
 
 
@@ -130,7 +140,11 @@ updateSnake ( game, cmd ) =
                 Right ->
                     { head | x = head.x + 1 }
 
-        tailPositions = game.snake |> List.take ((List.length game.snake) - 1) 
+        tailPositions = 
+            if game.ateFruit then
+                game.snake
+            else
+                game.snake |> List.take ((List.length game.snake) - 1) 
         tailXs = tailPositions |> List.map .x
         tailYs = tailPositions |> List.map .y
         tail_ = List.map2 Block tailXs tailYs
@@ -157,13 +171,24 @@ checkIfOutOfBounds ( game, cmd ) =
 updateGame : Game -> ( Game, Cmd Msg )      
 updateGame game =
     if game.isDead  then
-        ( {game |snake = initSnake,isDead= False,direction = Right} , Cmd.none )
+        ( {game |snake = initSnake,isDead= False,direction = Right, fruit = Nothing ,ateFruit = False} , Cmd.none )
     else if game.paused then
         (game, Cmd.none)
     else
          ( game, Cmd.none )
             |> checkIfOutOfBounds
+            |> checkIfAteFruit
             |> updateSnake
+            |> updateFruit
+
+
+spawnFruit : Game -> FruitSpawn -> Game
+spawnFruit game spawn =
+    let
+        ( x, y ) =
+            spawn.position
+    in
+        { game | fruit = Just { x = x, y = y } }
 
 update : Msg -> Game -> ( Game, Cmd Msg )
 update msg game =
@@ -172,6 +197,52 @@ update msg game =
             ( updateDirection arrow game, Cmd.none )
         Tick time ->
             updateGame game
+        MaybeSpawnFruit spawn ->
+            if spawn.chance == 0 then
+                ( spawnFruit game spawn, Cmd.none )
+            else
+                ( game, Cmd.none )
+
+checkIfAteFruit : ( Game, Cmd Msg ) -> ( Game, Cmd Msg )
+checkIfAteFruit ( game, cmd ) =
+    let
+        head =
+            snakeHead game.snake
+    in
+        case game.fruit of
+            Nothing ->
+                ( { game | ateFruit = False }, cmd )
+
+            Just fruit ->
+                ( { game | ateFruit = samePosition head fruit }, cmd )
+
+
+samePosition : Block -> Block -> Bool
+samePosition a b =
+    a.x == b.x && a.y == b.y
+
+updateFruit : ( Game, Cmd Msg ) -> ( Game, Cmd Msg )
+updateFruit ( game, cmd ) =
+    case game.fruit of
+        Nothing ->
+            ( game, Random.generate MaybeSpawnFruit makeFruitSpawnGenerator )
+
+        Just fruit ->
+            if game.ateFruit then
+                ( { game | fruit = Nothing }, cmd )
+            else
+                ( game, cmd )
+
+makeFruitSpawnGenerator : Random.Generator FruitSpawn
+makeFruitSpawnGenerator =
+    let
+        spawnPosition =
+            Random.pair (Random.int 0 55) (Random.int 0 45)
+
+        spawnChance =
+            Random.int 0 9
+    in
+        Random.map2 (\pos chance -> { position = pos, chance = chance }) spawnPosition spawnChance
 
 renderBlock : Block -> Svg Msg
 renderBlock block =
@@ -194,7 +265,19 @@ render game =
     in
         svg
             [ width "800", height "600", viewBox "0 0 50 50", parentStyle ]
-            (List.append [rect [ x "0", y "0", width "800", height "600", backgroundColor ] []] (renderSnake game.snake))
+            ([rect [ x "0", y "0", width "800", height "600", backgroundColor ] []] 
+                ++ (renderSnake game.snake) ++ (renderFruit game.fruit) )
+
+
+renderFruit : Maybe Block -> List (Svg Msg)
+renderFruit fruit =
+    case fruit of
+        Nothing ->
+            []
+
+        Just fruit ->
+            [ renderBlock fruit ]
+
 
 
 backgroundColor : Attribute Msg
