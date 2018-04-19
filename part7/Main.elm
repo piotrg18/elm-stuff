@@ -76,9 +76,15 @@ subscriptions model =
 updateDirection : ArrowKey -> Game -> Game
 updateDirection key game =
     let
-        { direction } =
-            game
+        { direction } = game
+        { paused } = game
 
+        paused_ = 
+            if key == Space && paused /= True then 
+                True
+            else 
+                False
+                
         direction_ =
             if key == LeftKey && direction /= Right then
                 Left
@@ -90,8 +96,10 @@ updateDirection key game =
                 Down
             else
                 direction
-    in
-        { game | direction = direction_ }
+         
+         
+    in          
+        { game | direction = direction_ ,paused = paused_ }
 
 snakeHead: (List Block) -> Block
 snakeHead snake =
@@ -150,6 +158,8 @@ updateGame : Game -> ( Game, Cmd Msg )
 updateGame game =
     if game.isDead  then
         ( {game |snake = initSnake,isDead= False,direction = Right} , Cmd.none )
+    else if game.paused then
+        (game, Cmd.none)
     else
          ( game, Cmd.none )
             |> checkIfOutOfBounds
