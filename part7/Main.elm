@@ -8,7 +8,8 @@ import Svg exposing (..)
 import Svg.Attributes exposing (fill, height, id, in_, result, rx, stdDeviation, viewBox, width, x, y)
 
 import Time exposing (Time)
-
+data : String
+data = "String"
 
 type alias FruitSpawn =
     { position : ( Int, Int )
@@ -58,7 +59,7 @@ type alias Game =
     }
 
 
-initSnake : Snake
+initSnake : List Block
 initSnake =
     [ Block 25 25
     , Block 24 25

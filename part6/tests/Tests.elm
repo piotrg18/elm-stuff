@@ -1,6 +1,6 @@
 module Tests exposing (..)
 
-import ElmHub exposing (responseDecoder)
+import WebApp exposing (..)
 import Expect exposing (Expectation)
 import Fuzz exposing (..)
 import Json.Decode exposing (Value, decodeString)
