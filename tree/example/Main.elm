@@ -50,7 +50,7 @@ view model =
                     ]
                 ]
     in
-    div [ class "content" ]
+    div [ class "content" ] 
         [ headerInfo
         , div [ class "demo jstree jstree-1 jstree-default", tabindex 0 ]
             [ listItem "jstree-container-ul jstree-children" model model.items
@@ -107,7 +107,7 @@ itemView model node lastNode =
                 ""
     in
     li [ class ("jstree-node" ++ leafClass ++ openClosedClass ++ lastNodeClass) ]
-        [ i [ class "jstree-icon jstree-ocl" ] []
+        [ i [ class "jstree-icon jstree-ocl" , Events.onClick (Toggle (nodeId node))] []
         , a [ class "jstree-anchor", href "#", tabindex -1, Events.onClick (Toggle (nodeId node)) ]
             [ i [ class "jstree-icon jstree-themeicon" ] []
             , text item.name
